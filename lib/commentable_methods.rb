@@ -25,6 +25,7 @@ module Juixe
                    -> { where(role: role.to_s) },
                    has_many_options(role)
         end
+        alias_method :define_role_based_inflection_5, :define_role_based_inflection_4
 
         def has_many_options(role)
           {:class_name => "Comment",
