@@ -12,20 +12,10 @@ module Juixe
       module HelperMethods
         private
         def define_role_based_inflection(role)
-          send("define_role_based_inflection_#{Rails.version.first}", role)
-        end
-
-        def define_role_based_inflection_3(role)
-          has_many "#{role.to_s}_comments".to_sym,
-                   has_many_options(role).merge(:conditions => { role: role.to_s })
-        end
-
-        def define_role_based_inflection_4(role)
           has_many "#{role.to_s}_comments".to_sym,
                    -> { where(role: role.to_s) },
                    has_many_options(role)
         end
-        alias_method :define_role_based_inflection_5, :define_role_based_inflection_4
 
         def has_many_options(role)
           {:class_name => "Comment",
