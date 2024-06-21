@@ -11,18 +11,16 @@ module Juixe
 
       module HelperMethods
         private
+
         def define_role_based_inflection(role)
-          has_many "#{role.to_s}_comments".to_sym,
-                   -> { where(role: role.to_s) },
-                   has_many_options(role)
+          has_many "#{role.to_s}_comments".to_sym, -> { where(role: role.to_s) }, **has_many_options(role)
         end
 
         def has_many_options(role)
-          {:class_name => "Comment",
-                  :as => :commentable,
-                  :dependent => :destroy,
-                  :before_add => Proc.new { |x, c| c.role = role.to_s }
-          }
+          { class_name: "Comment",
+            as:         :commentable,
+            dependent:  :destroy,
+            before_add: Proc.new { |x, c| c.role = role.to_s } }
         end
       end
 
@@ -30,7 +28,7 @@ module Juixe
         include HelperMethods
 
         def acts_as_commentable(*args)
-          options = args.to_a.flatten.compact.partition{ |opt| opt.kind_of? Hash }
+          options       = args.to_a.flatten.compact.partition { |opt| opt.kind_of? Hash }
           comment_roles = options.last.blank? ? nil : options.last.flatten.compact.map(&:to_sym)
 
           join_options = options.first.blank? ? [{}] : options.first
@@ -44,9 +42,9 @@ module Juixe
             comment_roles.each do |role|
               define_role_based_inflection(role)
             end
-            has_many :all_comments, { :as => :commentable, :dependent => :destroy, class_name: 'Comment' }.merge(join_options)
+            has_many :all_comments, **{ as: :commentable, dependent: :destroy, class_name: 'Comment' }.merge(join_options)
           else
-            has_many :comments, {:as => :commentable, :dependent => :destroy}.merge(join_options)
+            has_many :comments, **{ as: :commentable, dependent: :destroy }.merge(join_options)
           end
 
           comment_types.each do |role|
